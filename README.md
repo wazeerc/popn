@@ -24,7 +24,7 @@
 [![MIT License][license-shield]][license-url]
 
 # Power Outage Push Notification 🔌☹️
-A service that sends notifications whenever there is going to be a power outage in a specific (user defined) region of Mauritius.
+A service that allows you to view whenever there is going to be a power outage in a specific (user defined) region of Mauritius.
 
 <br>
 

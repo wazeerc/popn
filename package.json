@@ -1,25 +1,26 @@
 {
-  "name": "popn",
-  "version": "1.0.0",
-  "description": "<!-- ReadMe template forked from: https://github.com/othneildrew/Best-README-Template -->\r <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->\r <a name=\"readme-top\"></a>\r <!--\r *** Thanks for checking out the Best-README-Template. If you have a suggestion\r *** that would make this better, please fork the repo and create a pull request\r *** or simply open an issue with the tag \"enhancement\".\r *** Don't forget to give the project a star!\r *** Thanks again! Now go create something AMAZING! :D\r -->",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wazeerc/popn.git"
-  },
-  "author": "Wazeer, ",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/wazeerc/popn/issues"
-  },
-  "homepage": "https://github.com/wazeerc/popn#readme",
-  "dependencies": {
-    "axios": "^1.2.3",
-    "cheerio": "^1.0.0-rc.12",
-    "express": "^4.18.2",
-    "nodemon": "^2.0.20"
-  }
+    "name": "popn",
+    "version": "1.0.0",
+    "description": "<!-- ReadMe template forked from: https://github.com/othneildrew/Best-README-Template -->\r <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->\r <a name=\"readme-top\"></a>\r <!--\r *** Thanks for checking out the Best-README-Template. If you have a suggestion\r *** that would make this better, please fork the repo and create a pull request\r *** or simply open an issue with the tag \"enhancement\".\r *** Don't forget to give the project a star!\r *** Thanks again! Now go create something AMAZING! :D\r -->",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wazeerc/popn.git"
+    },
+    "author": "Wazeer, ",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/wazeerc/popn/issues"
+    },
+    "homepage": "https://github.com/wazeerc/popn#readme",
+    "dependencies": {
+        "axios": "^1.2.3",
+        "cheerio": "^1.0.0-rc.12",
+        "express": "^4.18.2",
+        "node-fetch": "^2.6.8",
+        "nodemon": "^2.0.20"
+    }
 }

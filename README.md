@@ -6,7 +6,8 @@
 
 ## About The Project
 
-A node application that allows the user to look up when the next planned power outage of your locality is. The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) using this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity). 
+A node application that allows the user to look up when the next planned power outage of their locality will occur.<br>
+The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) and uses this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity). 
 <br>
 #### Built with;
 

@@ -1,7 +1,7 @@
 <!-- ReadMe template forked from: https://github.com/othneildrew/Best-README-Template -->
 
 <a name="readme-top"></a>
-# Power Outage Push Notification 🔌☹️
+# Power Outage Push Notifications 🔌☹️
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project

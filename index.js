@@ -1,7 +1,7 @@
 /*
  *Logs:
  *21/01 - created index.js: server app
- *
+ *21/01 - accessed and parsed data from dataset
  *
  */
 
@@ -25,7 +25,7 @@ const dataset =
 /*
  *DATA MANIPULATION;
  */
-
+//function to read dataset and return as JSON
 async function fetchJSON(url) {
   const response = await fetch(dataset, {
     headers: {
@@ -41,7 +41,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dataset", async (req, res) => {
-  const data = await fetchJSON(dataset);
+  let data = await fetchJSON(dataset);
   res.json(data)
   console.log(data["blackriver"]);
 });
@@ -49,7 +49,7 @@ app.get("/dataset", async (req, res) => {
 let test_server = () => {
   app.listen(PORT, () =>
     console.log(
-      `🚀 Server running on PORT http://localhost:${PORT}
+      `🚀 Server running on http://localhost:${PORT}
             \n📅 View the dataset here: http://localhost:${PORT}/dataset
             `
     )

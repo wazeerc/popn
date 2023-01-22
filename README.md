@@ -2,16 +2,12 @@
 
 <a name="readme-top"></a>
 # Power Outage Push Notification 🔌☹️
-A service that sends notifications to mobile phones whenever there is going to be a power outage in a specific (user defined) region of Mauritius.
-
-<br>
-
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
-A node application that allows the user to look up when the next planned power outage of your locality is. The applicate pull data from [CEB](https://ceb.mu/customer-corner/power-outage-information) using this [dataset](https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json). 
-<br><br>
+A node application that allows the user to look up when the next planned power outage of your locality is. The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) using this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity). 
+<br>
 #### Built with;
 
 [![Node][Node.js]][Node-url]

@@ -13,6 +13,7 @@ The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outag
 
 [![Node][Node.js]][Node-url]
 [![npm][npm]][npm-url]
+[![electricity][electricity]][electricity-url]
 <br><br>
 <!-- GETTING STARTED -->
 # Getting Started
@@ -71,3 +72,5 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [Node-url]: https://nodejs.org/
 [npm]: https://img.shields.io/badge/npm-000000?style=for-the-badge&logo=npm&logoColor=white
 [npm-url]: https://www.npmjs.com/
+[electricity]: https://img.shields.io/badge/%F0%9F%87%B2%F0%9F%87%BA%E2%9A%A1-000000?style=for-the-badge&logo=power&logoColor=white
+[electricity-url]: https://

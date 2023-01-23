@@ -4,7 +4,7 @@
 # Power Outage Push Notifications 🔌☹️
 <!-- ABOUT THE PROJECT -->
 
-## About The Project
+### About The Project
 
 A node application that allows the user to look up when the next planned power outage of their locality will occur.<br>
 The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) and uses this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity). 
@@ -14,34 +14,38 @@ The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outag
 [![Node][Node.js]][Node-url]
 [![npm][npm]][npm-url]
 [![electricity][electricity]][electricity-url]
-<br><br>
+
+
 <!-- GETTING STARTED -->
 # Getting Started
 
-### Prerequisites
+## Prerequisites
 
-- Download node on your machine from [here](https://nodejs.org/en/download/).
-- Install the required npm packages;
+Download node on your machine from [here](https://nodejs.org/en/download/) and install the required npm packages;
 
   ```
   npm i express node-fetch nodemon
   ```
-
-<!-- USAGE EXAMPLES -->
-### Usage
-
-- Clone the repo
+  
+  Clone the repo;
 
   ```sh
   git clone https://github.com/wazeerc/popn
   ```
 
-- Start the node server within the project directory
+Start the node server within the project directory;
 
   ```sh
   npm run start
   ``` 
-<br>
+
+<!-- USAGE EXAMPLES -->
+<!-- ## Usage
+
+
+#### Features: -->
+
+
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -57,14 +61,13 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<br>
 
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right"><a href="#readme-top">back to top</a></p>
 
 
 <!-- MARKDOWN LINKS & IMAGES -->

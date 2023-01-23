@@ -23,13 +23,7 @@ The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outag
 - Install the required npm packages;
 
   ```
-  npm i express
-  ```
-  ```
-  npm i node-fetch
-  ```
-    ```
-  npm i nodemon
+  npm i express node-fetch nodemon
   ```
 
 <!-- USAGE EXAMPLES -->

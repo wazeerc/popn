@@ -7,8 +7,9 @@
 ### About The Project
 
 A Node.js application that allows the user to look up when the next planned power outage of their locality will occur.<br>
-The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) and uses this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity). 
-<br>
+The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) and uses this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity).
+###### Note: Current state of the app only serves to query the dataset, push notification features are under development 🚧 <br>
+
 #### Built with;
 
 [![Node][Node.js]][Node-url]
@@ -38,6 +39,7 @@ Start the node server within the project directory;
   ```sh
   npm run start
   ``` 
+  <br>
 
 <!-- USAGE EXAMPLES -->
 <!-- ## Usage

@@ -1,12 +1,12 @@
 <!-- ReadMe template forked from: https://github.com/othneildrew/Best-README-Template -->
 
 <a name="readme-top"></a>
-# Power Outage Push Notifications 🔌☹️
+# Power Outage Push Notifications🔌
 <!-- ABOUT THE PROJECT -->
 
 ### About The Project
 
-A node application that allows the user to look up when the next planned power outage of their locality will occur.<br>
+A Node.js application that allows the user to look up when the next planned power outage of their locality will occur.<br>
 The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outage-information) and uses this [dataset](https://github.com/MrSunshyne/mauritius-dataset-electricity). 
 <br>
 #### Built with;

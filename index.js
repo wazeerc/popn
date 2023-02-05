@@ -3,6 +3,7 @@
  *21/01 - created index.js: server app
  *21/01 - accessed and parsed data from dataset
  *23/01 - testing output format and added error handling
+ *05/02 - formatted output and refactored Run function
  *
  *Logs (<developer's_initial>);
  *
@@ -10,21 +11,25 @@
  *
  */
 
-"use strict";
+/* enable strict mode for better error handling and security (ES6)
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode 
+*/
+"use strict"; 
 
 /*
  *DATA DECLARATIONS;
  */
 const PORT = 8080; //port on which server will run
 //required packages;
-const express = require("express");
-const app = express();
+const express = require("express"); 
+const app = express(); 
 const axios = require("axios");
 const fetch = require("node-fetch");
 const prompt = require("prompt-sync")({ sigint: true });
 const dataset =
-  "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json";
-let data, region = "moka";
+  "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json"; /* CEB dataset in JSON format by MrSunshyne 
+  - https://github.com/MrSunshyne/ */
+let data, region = "moka"; //default region for testing
 
 /*
  *DATA MANIPULATION;
@@ -36,7 +41,6 @@ async function fetch_data() {
       accept: "application/json",
     },
   });
-
   return response.json();
 }
 
@@ -62,15 +66,23 @@ app.get("/dataset", async (req, res) => {
 
 //function to get user input and return data for that region
 let get_region = async (_data) => {
-
-  // region = prompt("Where do you live? ");
-  console.log(`\n💡 Power outage data fetched for ${region.toUpperCase()}; \n`);
-  //output data for the user defined region (3 upcomming power outages);
-  for (let i = 0; i < 3; i++) {
-    console.log(`\n${i+1}. 📅 ${_data[region][i].date}
-        \n🗺️  ${_data[region][i].locality}, ${_data[region][i].district.toUpperCase()}
+  try {
+    // region = prompt("Where do you live? ");
+    console.log(
+      `\n💡 Power outage data fetched for ${region.toUpperCase()}; \n`
+    );
+    //output data for the user defined region (3 upcomming power outages);
+    for (let i = 0; i < 3; i++) {
+      console.log(`\n${i + 1}. 📅 ${_data[region][i].date}
+        \n🗺️  ${_data[region][i].locality}, ${_data[region][
+        i
+      ].district.toUpperCase()}
         \n🏠 ${_data[region][i].streets}
-        `);
+                `);
+    }
+  }
+  catch (error) {
+    console.log(error);
   }
 };
 
@@ -101,5 +113,12 @@ let run = () => {
   }
 };
 
+
 //execute application;
 let popn = run();
+
+
+//export module;
+module.exports = popn;
+
+//end of file;

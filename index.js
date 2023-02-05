@@ -4,7 +4,7 @@
  *21/01 - accessed and parsed data from dataset
  *23/01 - testing output format and added error handling
  *
- * Logs (<developer's_initial>);
+ *Logs (<developer's_initial>);
  *
  *
  *
@@ -15,15 +15,16 @@
 /*
  *DATA DECLARATIONS;
  */
-const PORT = 8080; // port on which server will run
+const PORT = 8080; //port on which server will run
 //required packages;
 const express = require("express");
 const app = express();
 const axios = require("axios");
 const fetch = require("node-fetch");
+const prompt = require("prompt-sync")({ sigint: true });
 const dataset =
   "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json";
-let data;
+let data, region = "moka";
 
 /*
  *DATA MANIPULATION;
@@ -39,6 +40,7 @@ async function fetch_data() {
   return response.json();
 }
 
+//default route
 app.get("/", (req, res) => {
   try {
     res.send("Hello there! I am a JSON response.");
@@ -47,6 +49,7 @@ app.get("/", (req, res) => {
   }
 });
 
+//route to dataset
 app.get("/dataset", async (req, res) => {
   try {
     data = await fetch_data(dataset);
@@ -54,8 +57,24 @@ app.get("/dataset", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+  return data;
 });
 
+//function to get user input and return data for that region
+let get_region = async (_data) => {
+
+  // region = prompt("Where do you live? ");
+  console.log(`\n💡 Power outage data fetched for ${region.toUpperCase()}; \n`);
+  //output data for the user defined region (3 upcomming power outages);
+  for (let i = 0; i < 3; i++) {
+    console.log(`\n${i+1}. 📅 ${_data[region][i].date}
+        \n🗺️  ${_data[region][i].locality}, ${_data[region][i].district.toUpperCase()}
+        \n🏠 ${_data[region][i].streets}
+        `);
+  }
+};
+
+//function to test server routes and display urls
 let test_server = () => {
   try {
     app.listen(PORT, () =>
@@ -74,15 +93,13 @@ let test_server = () => {
  */
 let run = () => {
   try {
-    test_server();
-    fetch_data().then((data) => {
-      console.log('\n💡 Data fetched from dataset: \n')
-      console.log(data["blackriver"][0]); //Test output in console
-    });
+    //test_server(); /* uncomment to view server details */
+    //query dataset and output respective data;
+    fetch_data().then((data) => get_region(data));
   } catch (error) {
     console.log(error);
   }
 };
 
-//execute;
+//execute application;
 let popn = run();

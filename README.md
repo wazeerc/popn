@@ -25,7 +25,7 @@ The application pulls data from [CEB](https://ceb.mu/customer-corner/power-outag
 Download node on your machine from [here](https://nodejs.org/en/download/) and install the required npm packages;
 
   ```
-  npm i express node-fetch nodemon
+  npm i express node-fetch
   ```
   
   Clone the repo;

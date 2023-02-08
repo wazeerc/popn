@@ -4,6 +4,7 @@
  *21/01 - accessed and parsed data from dataset
  *23/01 - testing output format and added error handling
  *05/02 - formatted output and refactored Run function
+ *08/02 - added promts and refactored async functions
  *
  *Logs (<developer's_initial>);
  *
@@ -14,22 +15,54 @@
 /* enable strict mode for better error handling and security (ES6)
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode 
 */
-"use strict"; 
+"use strict";
 
 /*
  *DATA DECLARATIONS;
  */
 const PORT = 8080; //port on which server will run
 //required packages;
-const express = require("express"); 
-const app = express(); 
-const axios = require("axios");
-const fetch = require("node-fetch");
-const prompt = require("prompt-sync")({ sigint: true });
+import express from "express";
+//const express = require("express");
+const app = express();
+import fetch from "node-fetch";
+//const fetch = require("node-fetch");
 const dataset =
   "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json"; /* CEB dataset in JSON format by MrSunshyne 
   - https://github.com/MrSunshyne/ */
-let data, region = "moka"; //default region for testing
+
+import { createInterface } from "readline";
+//global variables;
+let data, region;
+
+/*
+ *READ USER INPUT;
+ */
+//create readline interface
+const readline = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+//create promise to read user input
+const readLineAsync = (msg) => {
+  return new Promise((resolve) => {
+    readline.question(msg, (userRes) => {
+      resolve(userRes);
+    });
+  });
+};
+
+//get user input and return as string
+let get_region = async () => {
+  try {
+    region = await readLineAsync(`🔍 Enter a region: `);
+    readline.close();
+  } catch (error) {
+    console.log(error);
+  }
+  //convert to string and return;
+  return region;
+};
 
 /*
  *DATA MANIPULATION;
@@ -65,23 +98,19 @@ app.get("/dataset", async (req, res) => {
 });
 
 //function to get user input and return data for that region
-let get_region = async (_data) => {
+let get_region_po = async (_data) => {
   try {
-    // region = prompt("Where do you live? ");
-    console.log(
-      `\n💡 Power outage data fetched for ${region.toUpperCase()}; \n`
-    );
+    console.log(`\n💡 Power outage data fetched for ${region}; \n`);
     //output data for the user defined region (3 upcomming power outages);
     for (let i = 0; i < 3; i++) {
       console.log(`\n${i + 1}. 📅 ${_data[region][i].date}
-        \n🗺️  ${_data[region][i].locality}, ${_data[region][
+        \n🗺️ ${_data[region][i].locality}, ${_data[region][
         i
       ].district.toUpperCase()}
         \n🏠 ${_data[region][i].streets}
                 `);
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
   }
 };
@@ -93,7 +122,8 @@ let test_server = () => {
       console.log(
         `🚀 Server running on http://localhost:${PORT}
             \n📅 View the dataset here: http://localhost:${PORT}/dataset
-        `)
+        `
+      )
     );
   } catch (error) {
     console.log(error);
@@ -106,19 +136,17 @@ let test_server = () => {
 let run = () => {
   try {
     //test_server(); /* uncomment to view server details */
+    //get user input then fetch data and get power outage data for that region;
+    get_region().then((region) =>
+      fetch_data().then((data) => get_region_po(data))
+    );
     //query dataset and output respective data;
-    fetch_data().then((data) => get_region(data));
   } catch (error) {
     console.log(error);
   }
 };
 
-
 //execute application;
 let popn = run();
-
-
-//export module;
-module.exports = popn;
 
 //end of file;

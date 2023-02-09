@@ -47,7 +47,56 @@ const districts = [
 ];
 
 /*
- *READ USER INPUT;
+ *SERVER;
+ */
+//read dataset and return as JSON
+async function fetch_data() {
+  const response = await fetch(dataset, {
+    headers: {
+      accept: "application/json",
+    },
+  });
+  return response.json();
+}
+
+//default route
+app.get("/", (req, res) => {
+  try {
+    res.send("Hello there! I am a JSON response.");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//route to dataset
+app.get("/dataset", async (req, res) => {
+  try {
+    data = await fetch_data(dataset);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+  return data;
+});
+
+//function to test server routes and display urls
+let test_server = () => {
+  try {
+    app.listen(PORT, () =>
+      //display server details
+      console.log(
+        `🚀 Server running on http://localhost:${PORT}
+            \n📅 View the dataset here: http://localhost:${PORT}/dataset
+        `
+      )
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/*
+ *USER INPUT;
  */
 //create readline interface
 const readline = createInterface({
@@ -90,6 +139,11 @@ const readLineAsync2 = (msg) => {
         console.log(`\n❌ Please enter a number. Try again.\n`);
         resolve(readLineAsync2(msg));
       }
+      //limit number of power outages to display to 50
+      if (userRes > 50) {
+        console.log(`\n❌ Please enter a number less than 50. Try again.\n`);
+        resolve(readLineAsync2(msg));
+      }
       resolve(userRes);
     });
   });
@@ -109,41 +163,12 @@ let get_region = async () => {
 /*
  *DATA MANIPULATION;
  */
-//read dataset and return as JSON
-async function fetch_data() {
-  const response = await fetch(dataset, {
-    headers: {
-      accept: "application/json",
-    },
-  });
-  return response.json();
-}
-
-//default route
-app.get("/", (req, res) => {
-  try {
-    res.send("Hello there! I am a JSON response.");
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-//route to dataset
-app.get("/dataset", async (req, res) => {
-  try {
-    data = await fetch_data(dataset);
-    res.json(data);
-  } catch (error) {
-    console.log(error);
-  }
-  return data;
-});
 
 //function to get user input and return data for that region
 let get_region_po = async (_data) => {
   try {
     console.log(
-      `\n💡 Power outage data fetched for ${
+      `\n\n💡 Power outage data fetched for ${
         region.charAt(0).toUpperCase() + region.slice(1)
       }; \n`
     );
@@ -161,29 +186,13 @@ let get_region_po = async (_data) => {
   }
 };
 
-//function to test server routes and display urls
-let test_server = () => {
-  try {
-    app.listen(PORT, () =>
-      //display server details
-      console.log(
-        `🚀 Server running on http://localhost:${PORT}
-            \n📅 View the dataset here: http://localhost:${PORT}/dataset
-        `
-      )
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 //function to show user a guide on how to use the app
 let user_guide = () => {
   try {
     console.log(
       `Hello there! I am a power outage app for Mauritius 🇲🇺.\n\n📚 User guide:
         \n1. Select a district from the list.
-        \n2. The app will display the next 3 power outages for that district.
+        \n2. The app will display the next power outages for that district.
         \n3. To exit the app, type "exit" and or "ctrl + c".
         \n4. To view the dataset, visit http://localhost:${PORT}/dataset.
         `

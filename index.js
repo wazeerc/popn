@@ -5,8 +5,7 @@
  *23/01 - testing output format and added error handling
  *05/02 - formatted output and refactored Run function
  *08/02 - added promts and refactored async functions
- *09/02 - added details to promts
- *09/02 - added more prompts
+ *09/02 - added promts and restructured code
  *
  *Logs (<developer's_initial>);
  *

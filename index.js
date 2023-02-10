@@ -26,12 +26,11 @@ const PORT = 8080; //port on which server will run
 import express from "express";
 const app = express();
 import fetch from "node-fetch";
-import { createInterface } from "readline";
+import { createInterface } from "readline"; //readline package to read user input
 
 //global variables;
 const dataset =
-  "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json"; /* CEB dataset in JSON format by MrSunshyne 
-  - https://github.com/MrSunshyne/ */
+  "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json"; /* CEB dataset in JSON format by MrSunshyne - https://github.com/MrSunshyne/ */
 let data, region, amt_po;
 const districts = [
   "blackriver",
@@ -106,9 +105,15 @@ const readline = createInterface({
 const readLineAsync = (msg) => {
   return new Promise((resolve) => {
     readline.question(msg, (userRes) => {
-      if (userRes === "exit") process.exit(0);
+      if (userRes === "exit") 
+      {
+        console.log("\n👋 Shutting down...\n");
+        process.exit(1);
+      }
       //remove spaces and convert to lowercase
       userRes = userRes.replace(/\s/g, "").toLowerCase();
+      //sanitize user input
+      userRes = userRes.replace(/[^a-zA-Z ]/g, "");
       //if user input is not a known district, ask again
       if (!districts.includes(userRes)) {
         //check if user input made a typo
@@ -116,7 +121,7 @@ const readLineAsync = (msg) => {
           return district.includes(userRes);
         });
         if (typo) {
-          console.log(`\n❌ Did you mean '${typo}'? Try again.\n`);
+          console.log(`\n⚠️ Did you mean '${typo}'? Try again.\n`);
           resolve(readLineAsync(msg));
         } else {
           console.log(`\n❌ District not found. Try again.\n`);
@@ -132,7 +137,11 @@ const readLineAsync = (msg) => {
 const readLineAsync2 = (msg) => {
   return new Promise((resolve) => {
     readline.question(msg, (userRes) => {
-      if (userRes === "exit") process.exit(0);
+      if (userRes === "exit") 
+      {
+        console.log("\n👋 Shutting down...\n");
+        process.exit(1);
+      }
       //ask for number of power outages to display
       if (isNaN(userRes)) {
         console.log(`\n❌ Please enter a number. Try again.\n`);
@@ -140,7 +149,7 @@ const readLineAsync2 = (msg) => {
       }
       //limit number of power outages to display to 50
       if (userRes > 50) {
-        console.log(`\n❌ Please enter a number less than 50. Try again.\n`);
+        console.log(`\n⚠️ Please enter a number less than 50. Try again.\n`);
         resolve(readLineAsync2(msg));
       }
       resolve(userRes);
@@ -192,8 +201,8 @@ let user_guide = () => {
       `Hello there! I am a power outage app for Mauritius 🇲🇺.\n\n📚 User guide:
         \n1. Select a district from the list.
         \n2. The app will display the next power outages for that district.
-        \n3. To exit the app, type "exit" and or "ctrl + c".
-        \n4. To view the dataset, visit http://localhost:${PORT}/dataset.
+        \n3. To exit the app, type "exit".
+        \n4. To view the dataset, go to http://localhost:${PORT}/dataset.
         `
     );
   } catch (error) {
@@ -207,12 +216,15 @@ let user_guide = () => {
 let run = () => {
   try {
     user_guide();
-    //test_server(); /* uncomment to view server details */
     //get user input then fetch data and get power outage data for that region;
     get_region().then(() => fetch_data().then((data) => get_region_po(data)));
     //query dataset and output respective data;
   } catch (error) {
     console.log(error);
+    //keep a log of errors;
+    fs.appendFile("error.log", error, (err) => {
+      if (err) throw err;
+    });
   }
 };
 

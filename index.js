@@ -6,10 +6,21 @@
  *05/02 - formatted output and refactored Run function
  *08/02 - added promts and refactored async functions
  *09/02 - added promts and restructured code
+ *10/02 - retrieval of data by district and locality
+ *20/02 - display of data by locality
+ *
+ *
  *
  *Logs (<developer's_initial>);
  *
  *
+ *
+ *Known Bugs/Issues (W);
+ *Error handling;
+ *-wrong locality input (line 161)
+ *-when no power outages found for a locality (line 236)
+ *
+ * 
  *
  */
 
@@ -31,14 +42,18 @@ import { createInterface } from "readline"; //readline package to read user inpu
 //global variables;
 const dataset =
   "https://raw.githubusercontent.com/MrSunshyne/mauritius-dataset-electricity/main/data/power-outages.json"; /* CEB dataset in JSON format by MrSunshyne - https://github.com/MrSunshyne/ */
-let data, region, amt_po;
+let data,
+  district,
+  locality,
+  localities = [],
+  amt_po = 99; //amount of power outages data to query
 const districts = [
   "blackriver",
   "flacq",
   "grandport",
   "moka",
   "pamplemousses",
-  "plaineswilhems",
+  "plainewilhems",
   "portlouis",
   "rivieredurempart",
   "savanne",
@@ -49,18 +64,24 @@ const districts = [
  */
 //read dataset and return as JSON
 async function fetch_data() {
-  const response = await fetch(dataset, {
-    headers: {
-      accept: "application/json",
-    },
-  });
-  return response.json();
+  try {
+    const response = await fetch(dataset, {
+      headers: {
+        accept: "application/json",
+      },
+    });
+    return response.json();
+  } catch (error) {
+    console.log(error);
+    console.log("🚨 Error fetching data from dataset. Please try again later.");
+    process.exit(1);
+  }
 }
 
 //default route
 app.get("/", (req, res) => {
   try {
-    res.send("Hello there! I am a JSON response.");
+    res.send("\n\nHello there! I am a JSON response.");
   } catch (error) {
     console.log(error);
   }
@@ -101,20 +122,16 @@ const readline = createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-//create promise to read user input
-const readLineAsync = (msg) => {
+//create promise to read user input for district
+const readLineAsync_district = (msg) => {
   return new Promise((resolve) => {
     readline.question(msg, (userRes) => {
-      if (userRes === "exit") 
-      {
+      if (userRes === "exit") {
         console.log("\n👋 Shutting down...\n");
         process.exit(1);
       }
-      //remove spaces and convert to lowercase
       userRes = userRes.replace(/\s/g, "").toLowerCase();
-      //sanitize user input
       userRes = userRes.replace(/[^a-zA-Z ]/g, "");
-      //if user input is not a known district, ask again
       if (!districts.includes(userRes)) {
         //check if user input made a typo
         let typo = districts.find((district) => {
@@ -122,10 +139,10 @@ const readLineAsync = (msg) => {
         });
         if (typo) {
           console.log(`\n⚠️ Did you mean '${typo}'? Try again.\n`);
-          resolve(readLineAsync(msg));
+          resolve(readLineAsync_district(msg));
         } else {
           console.log(`\n❌ District not found. Try again.\n`);
-          resolve(readLineAsync(msg));
+          resolve(readLineAsync_district(msg));
         }
       }
       resolve(userRes);
@@ -133,61 +150,101 @@ const readLineAsync = (msg) => {
   });
 };
 
-//create promise to get user input for number of power outages to display
-const readLineAsync2 = (msg) => {
+//create a promise to get user input for locality
+const readLineAsync_locality = async (msg) => {
   return new Promise((resolve) => {
     readline.question(msg, (userRes) => {
-      if (userRes === "exit") 
-      {
+      if (userRes === "exit") {
         console.log("\n👋 Shutting down...\n");
         process.exit(1);
       }
-      //ask for number of power outages to display
-      if (isNaN(userRes)) {
-        console.log(`\n❌ Please enter a number. Try again.\n`);
-        resolve(readLineAsync2(msg));
-      }
-      //limit number of power outages to display to 50
-      if (userRes > 50) {
-        console.log(`\n⚠️ Please enter a number less than 50. Try again.\n`);
-        resolve(readLineAsync2(msg));
-      }
+      userRes = userRes.toLowerCase();
+      userRes = userRes.replace(/[^a-zA-Z ]/g, "");
+      //check if user input made a typo???
       resolve(userRes);
     });
   });
 };
 
-let get_region = async () => {
+//function to get user inputs
+let promt_po_data = async () => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   console.log(
-    `\n🗺️ Available districts: Black River, Flacq, Grand Port, Moka, Pamplemousses,Plaines Wilhems, Port Louis, Riviere du Rempart, and Savanne.\n`
+    `\n🗺️ Available districts: Black River, Flacq, Grand Port, Moka, Pamplemousses, Plaine Wilhems, Port Louis, Riviere du Rempart, and Savanne.\n`
   );
-  region = await readLineAsync(`\n🔍 Select a district: `);
-  amt_po = await readLineAsync2(`\n🔍 How many power outages to display? `);
+  //prompt user to select a district then locality
+  district = await readLineAsync_district(`\n🔍 Select a district: `);
+  await display_localities();
+  locality = await readLineAsync_locality(`\n🔍 Select a locality: `);
   readline.close();
-  return region;
+  return district, locality;
 };
 
 /*
  *DATA MANIPULATION;
  */
-
-//function to get user input and return data for that region
-let get_region_po = async (_data) => {
+//function to display all localities for a user defined district
+let display_localities = async () => {
   try {
+    let _data = await fetch_data(dataset);
+    for (let i = 0; i < _data[district].length; i++) {
+      localities.push(_data[district][i].locality);
+    }
+    localities = [...new Set(localities)];
+    localities.sort();
+    localities = localities.map((locality) => {
+      return locality.toLowerCase();
+    });
+    localities = localities.map((locality) => {
+      return locality.charAt(0).toUpperCase() + locality.slice(1);
+    });
+    localities = localities.map((locality) => {
+      return locality.replace(/\w\S*/g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      });
+    });
+
+    console.log(`\n🏙️ Available localities: ${localities.join(", ")}\n`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//function to fetch data from dataset for user defined parameters
+let display_po = async (_data) => {
+  try {
+    console.log("\n______________________________________________________");
     console.log(
       `\n\n💡 Power outage data fetched for ${
-        region.charAt(0).toUpperCase() + region.slice(1)
-      }; \n`
+        locality.charAt(0).toUpperCase() + locality.slice(1)
+      }, ${
+        district.charAt(0).toUpperCase() + district.slice(1)
+      } (up to ${amt_po} planned power outages); \n`
     );
-    //output data for the user defined region (3 upcomming power outages);
+    console.log("______________________________________________________");
+    //output data for the user defined parameters
+    new Promise((resolve) => setTimeout(resolve, 1000));
+    //loop through district and return data for the locality
     for (let i = 0; i < amt_po; i++) {
-      console.log(`\n${i + 1}. 📅 ${_data[region][i].date}
-        \n🏙️ ${_data[region][i].locality}, ${_data[region][
-        i
-      ].district.toUpperCase()}
-        \n🛣️ ${_data[region][i].streets}
+      var targetLocality = _data[district][i].locality.toLowerCase();
+      if (locality === targetLocality) {
+        console.log(`\n📅 ${_data[district][i].date}
+        \n🏙️ ${_data[district][i].locality}, ${_data[district][
+          i
+        ].district.toUpperCase()}
+        \n🛣️ ${_data[district][i].streets}
                 `);
+        console.log("______________________________________________________\n");
+      }
+      //if no power outages found for the locality found???
+      // switch (locality) {
+      //   case targetLocality:
+      //     console.log(
+      //       `\n⚠️ No power outages found for ${
+      //         locality.charAt(0).toUpperCase() + locality.slice(1)
+      //       }.\n`
+      //     );
+      // }
     }
   } catch (error) {
     console.log(error);
@@ -216,19 +273,15 @@ let user_guide = () => {
 let run = () => {
   try {
     user_guide();
-    //get user input then fetch data and get power outage data for that region;
-    get_region().then(() => fetch_data().then((data) => get_region_po(data)));
-    //query dataset and output respective data;
+    promt_po_data().then(() => fetch_data().then((data) => display_po(data)));
   } catch (error) {
     console.log(error);
-    //keep a log of errors;
     fs.appendFile("error.log", error, (err) => {
       if (err) throw err;
     });
   }
 };
 
-//execute application;
 let popn = run();
 
 //end of file;

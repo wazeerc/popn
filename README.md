@@ -70,7 +70,7 @@ Don't forget to give the project a star! Thanks again! 😁
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ---
-### Disclaimer
+### Disclaimer 🚨
 Not affiliated with CEB in any way. This is a personal project and is not endorsed by CEB. Data is fetched from the above mentionned dataset but not directly from CEB.
 
 <p align="right"><a href="#readme-top">☝️</a></p>

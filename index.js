@@ -15,11 +15,10 @@
  *
  *
  *
- *Known Bugs/Issues (W);
+ !Known Bugs/Issues (W);
  *Error handling;
  *-wrong locality input (line 161)
- *-when no power outages found for a locality (line 236)
- *
+ *-if no data is found for a locality (line 262)
  * 
  *
  */
@@ -46,7 +45,9 @@ let data,
   district,
   locality,
   localities = [],
-  amt_po = 99; //amount of power outages data to query
+  amt_po = 100; //amount of power outages data to query
+const sep = "----------------------------------------";
+const exit_msg = "\n👋 Shutting down...\n";
 const districts = [
   "blackriver",
   "flacq",
@@ -72,8 +73,8 @@ async function fetch_data() {
     });
     return response.json();
   } catch (error) {
-    console.log(error);
     console.log("🚨 Error fetching data from dataset. Please try again later.");
+    console.log(error);
     process.exit(1);
   }
 }
@@ -98,22 +99,6 @@ app.get("/dataset", async (req, res) => {
   return data;
 });
 
-//function to test server routes and display urls
-let test_server = () => {
-  try {
-    app.listen(PORT, () =>
-      //display server details
-      console.log(
-        `🚀 Server running on http://localhost:${PORT}
-            \n📅 View the dataset here: http://localhost:${PORT}/dataset
-        `
-      )
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 /*
  *USER INPUT;
  */
@@ -127,7 +112,7 @@ const readLineAsync_district = (msg) => {
   return new Promise((resolve) => {
     readline.question(msg, (userRes) => {
       if (userRes === "exit") {
-        console.log("\n👋 Shutting down...\n");
+        console.log(exit_msg);
         process.exit(1);
       }
       userRes = userRes.replace(/\s/g, "").toLowerCase();
@@ -155,7 +140,7 @@ const readLineAsync_locality = async (msg) => {
   return new Promise((resolve) => {
     readline.question(msg, (userRes) => {
       if (userRes === "exit") {
-        console.log("\n👋 Shutting down...\n");
+        console.log(exit_msg);
         process.exit(1);
       }
       userRes = userRes.toLowerCase();
@@ -173,9 +158,9 @@ let promt_po_data = async () => {
     `\n🗺️ Available districts: Black River, Flacq, Grand Port, Moka, Pamplemousses, Plaine Wilhems, Port Louis, Riviere du Rempart, and Savanne.\n`
   );
   //prompt user to select a district then locality
-  district = await readLineAsync_district(`\n🔍 Select a district: `);
+  district = await readLineAsync_district(`\n📍 Select a district: `);
   await display_localities();
-  locality = await readLineAsync_locality(`\n🔍 Select a locality: `);
+  locality = await readLineAsync_locality(`\n📍 Select a locality: `);
   readline.close();
   return district, locality;
 };
@@ -203,7 +188,6 @@ let display_localities = async () => {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
       });
     });
-
     console.log(`\n🏙️ Available localities: ${localities.join(", ")}\n`);
   } catch (error) {
     console.log(error);
@@ -213,7 +197,6 @@ let display_localities = async () => {
 //function to fetch data from dataset for user defined parameters
 let display_po = async (_data) => {
   try {
-    console.log("\n______________________________________________________");
     console.log(
       `\n\n💡 Power outage data fetched for ${
         locality.charAt(0).toUpperCase() + locality.slice(1)
@@ -221,7 +204,7 @@ let display_po = async (_data) => {
         district.charAt(0).toUpperCase() + district.slice(1)
       } (up to ${amt_po} planned power outages); \n`
     );
-    console.log("______________________________________________________");
+    console.log(sep);
     //output data for the user defined parameters
     new Promise((resolve) => setTimeout(resolve, 1000));
     //loop through district and return data for the locality
@@ -234,18 +217,19 @@ let display_po = async (_data) => {
         ].district.toUpperCase()}
         \n🛣️ ${_data[district][i].streets}
                 `);
-        console.log("______________________________________________________\n");
+        console.log(sep);
       }
-      //if no power outages found for the locality found???
-      // switch (locality) {
-      //   case targetLocality:
-      //     console.log(
-      //       `\n⚠️ No power outages found for ${
-      //         locality.charAt(0).toUpperCase() + locality.slice(1)
-      //       }.\n`
-      //     );
+      //else if (locality.length === 0) {
+      //   console.log(
+      //     `\n🪧 No other power outages found until ${_data[district][
+      //       amt_po
+      //     ].to.slice(5, 10)}.\n`
+      //   );
       // }
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log(exit_msg, "\n");
   } catch (error) {
     console.log(error);
   }
@@ -255,7 +239,7 @@ let display_po = async (_data) => {
 let user_guide = () => {
   try {
     console.log(
-      `Hello there! I am a power outage app for Mauritius 🇲🇺.\n\n📚 User guide:
+      `Hello! I am a power outage app for Mauritius 🇲🇺.\n\n📚 User guide:
         \n1. Select a district from the list.
         \n2. The app will display the next power outages for that district.
         \n3. To exit the app, type "exit".

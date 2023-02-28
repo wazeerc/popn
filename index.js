@@ -8,6 +8,7 @@
  *09/02 - added promts and restructured code
  *10/02 - retrieval of data by district and locality
  *20/02 - display of data by locality
+ *28/02 - fixed 1a,2b,2c, removed redundant code
  *
  *
  *
@@ -17,9 +18,17 @@
  *
  !Known Bugs/Issues (W);
  *Error handling;
- *-wrong locality input (line 161)
- *-if no data is found for a locality (line 262)
- * 
+ *1a. wrong locality input (line 161) ✅ --- fixed
+ *1b. if no data is found for a locality (line 262)
+ *
+ *
+ *
+ TODO, Additional features and functionality;
+ *2a. command to go back - not available 
+ *2b. remove filtering for number in read locality function ✅ --- fixed
+ *2c. move large lists to a new file ✅ --- fixed
+ *
+ *
  *
  */
 
@@ -37,6 +46,7 @@ import express from "express";
 const app = express();
 import fetch from "node-fetch";
 import { createInterface } from "readline"; //readline package to read user input
+import { available_districts, available_localities } from "./data.js";
 
 //global variables;
 const dataset =
@@ -48,17 +58,6 @@ let data,
   amt_po = 100; //amount of power outages data to query
 const sep = "----------------------------------------";
 const exit_msg = "\n👋 Shutting down...\n";
-const districts = [
-  "blackriver",
-  "flacq",
-  "grandport",
-  "moka",
-  "pamplemousses",
-  "plainewilhems",
-  "portlouis",
-  "rivieredurempart",
-  "savanne",
-];
 
 /*
  *SERVER;
@@ -117,9 +116,9 @@ const readLineAsync_district = (msg) => {
       }
       userRes = userRes.replace(/\s/g, "").toLowerCase();
       userRes = userRes.replace(/[^a-zA-Z ]/g, "");
-      if (!districts.includes(userRes)) {
+      if (!available_districts.includes(userRes)) {
         //check if user input made a typo
-        let typo = districts.find((district) => {
+        let typo = available_districts.find((district) => {
           return district.includes(userRes);
         });
         if (typo) {
@@ -143,9 +142,21 @@ const readLineAsync_locality = async (msg) => {
         console.log(exit_msg);
         process.exit(1);
       }
+      //do not filter numbers???
       userRes = userRes.toLowerCase();
-      userRes = userRes.replace(/[^a-zA-Z ]/g, "");
-      //check if user input made a typo???
+      //check if user input made a typo
+      if (!available_localities.includes(userRes)) {
+        let typo = available_localities.find((locality) => {
+          return locality.includes(userRes);
+        });
+        if (typo) {
+          console.log(`\n⚠️ Did you mean '${typo}'? Try again.\n`);
+          resolve(readLineAsync_locality(msg));
+        } else {
+          console.log(`\n❌ Locality not found. Try again.\n`);
+          resolve(readLineAsync_locality(msg));
+        }
+      }
       resolve(userRes);
     });
   });
@@ -154,9 +165,14 @@ const readLineAsync_locality = async (msg) => {
 //function to get user inputs
 let promt_po_data = async () => {
   await new Promise((resolve) => setTimeout(resolve, 500));
-  console.log(
-    `\n🗺️ Available districts: Black River, Flacq, Grand Port, Moka, Pamplemousses, Plaine Wilhems, Port Louis, Riviere du Rempart, and Savanne.\n`
-  );
+  console.log("\n", sep);
+
+  let districts = available_districts.map((district) => {
+    return district.charAt(0).toUpperCase() + district.slice(1);
+  });
+  districts = districts.join(", ");
+  console.log(`\n🗺️ Available districts: ${districts}.\n`);
+
   //prompt user to select a district then locality
   district = await readLineAsync_district(`\n📍 Select a district: `);
   await display_localities();

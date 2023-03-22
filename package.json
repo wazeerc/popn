@@ -1,6 +1,6 @@
 {
     "name": "popn",
-    "version": "0.9.2",
+    "version": "0.9.7",
     "description": "A Node.js application that allows the user to look up when the next planned power outage of their locality will occur.",
     "main": "index.js",
     "type": "module",

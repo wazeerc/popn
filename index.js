@@ -8,10 +8,11 @@
  *09/02 - added promts and restructured code
  *10/02 - retrieval of data by district and locality
  *20/02 - display of data by locality
- *28/02 - fixed 1a,2b,2c, removed redundant code
+ *28/02 - fixed issue 1a,2b,2c, removed redundant code
+ *22/03 - fixed issue 1b
  *
  *
- *
+ * 
  *Logs (<developer's_initial>);
  *
  *
@@ -19,12 +20,12 @@
  !Known Bugs/Issues (W);
  *Error handling;
  *1a. wrong locality input (line 161) ✅ --- fixed
- *1b. if no data is found for a locality (line 262)
+ *1b. if no data is found for a locality (line 262) ✅ --- fixed
  *
  *
  *
  TODO, Additional features and functionality;
- *2a. command to go back - not available 
+ *2a. command to go back - not available
  *2b. remove filtering for number in read locality function ✅ --- fixed
  *2c. move large lists to a new file ✅ --- fixed
  *
@@ -56,6 +57,7 @@ let data,
   locality,
   localities = [],
   amt_po = 100; //amount of power outages data to query
+
 const sep = "----------------------------------------";
 const exit_msg = "\n👋 Shutting down...\n";
 
@@ -81,7 +83,7 @@ async function fetch_data() {
 //default route
 app.get("/", (req, res) => {
   try {
-    res.send("\n\nHello there! I am a JSON response.");
+    res.send("\n\nHello there! I am a JSON response 🥸.");
   } catch (error) {
     console.log(error);
   }
@@ -125,7 +127,7 @@ const readLineAsync_district = (msg) => {
           console.log(`\n⚠️ Did you mean '${typo}'? Try again.\n`);
           resolve(readLineAsync_district(msg));
         } else {
-          console.log(`\n❌ District not found. Try again.\n`);
+          console.log("\n❌ District not found. Try again.\n");
           resolve(readLineAsync_district(msg));
         }
       }
@@ -142,7 +144,12 @@ const readLineAsync_locality = async (msg) => {
         console.log(exit_msg);
         process.exit(1);
       }
-      //do not filter numbers???
+
+      if (userRes === "back") {
+        resolve(userRes);
+        //restart the program
+      }
+
       userRes = userRes.toLowerCase();
       //check if user input made a typo
       if (!available_localities.includes(userRes)) {
@@ -213,43 +220,49 @@ let display_localities = async () => {
 //function to fetch data from dataset for user defined parameters
 let display_po = async (_data) => {
   try {
-    console.log(
-      `\n\n💡 Power outage data fetched for ${
-        locality.charAt(0).toUpperCase() + locality.slice(1)
-      }, ${
-        district.charAt(0).toUpperCase() + district.slice(1)
-      } (up to ${amt_po} planned power outages); \n`
-    );
-    console.log(sep);
-    //output data for the user defined parameters
-    new Promise((resolve) => setTimeout(resolve, 1000));
+    let found = false; // initialize a flag to track if data was found for the locality
+    console.log('\n',sep);
     //loop through district and return data for the locality
     for (let i = 0; i < amt_po; i++) {
       var targetLocality = _data[district][i].locality.toLowerCase();
       if (locality === targetLocality) {
-        console.log(`\n📅 ${_data[district][i].date}
-        \n🏙️ ${_data[district][i].locality}, ${_data[district][
+        if (!found) {
+          // print the message only if data for the locality is found
+          console.log(
+            `\n💡 Power outage data fetched for ${
+              locality.charAt(0).toUpperCase() + locality.slice(1)
+            }, ${
+              district.charAt(0).toUpperCase() + district.slice(1)
+            } (up to ${amt_po} planned power outages); \n`
+          );
+          found = true; // set the flag to true
+        }
+        console.log(`📅 ${_data[district][i].date}
+          \n🏙️ ${_data[district][i].locality}, ${_data[district][
           i
         ].district.toUpperCase()}
-        \n🛣️ ${_data[district][i].streets}
-                `);
+          \n🛣️ ${_data[district][i].streets}
+          `);
         console.log(sep);
       }
-      //else if (locality.length === 0) {
-      //   console.log(
-      //     `\n🪧 No other power outages found until ${_data[district][
-      //       amt_po
-      //     ].to.slice(5, 10)}.\n`
-      //   );
-      // }
+    }
+
+    if (!found) {
+      // if data for the locality is not found, display a message
+      console.log(
+        `\n❌ No power outage data found for ${
+          locality.charAt(0).toUpperCase() + locality.slice(1)
+        }.\n`
+      );
     }
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(exit_msg, "\n");
+    console.log(exit_msg);
   } catch (error) {
     console.log(error);
   }
 };
+
 
 //function to show user a guide on how to use the app
 let user_guide = () => {
